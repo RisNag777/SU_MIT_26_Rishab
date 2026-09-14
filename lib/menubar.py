@@ -63,7 +63,7 @@ def build_menubar_html(*, active_course: str | None = None, active_file: str | N
                         href = _file_href(course_id, section_name, sess, item)
                         file_active = " is-active" if item.relative == active_file else ""
                         file_lis.append(
-                            f'<a class="file-link{file_active}" href="{_esc(href)}" target="_parent">'
+                            f'<a class="file-link{file_active}" href="{_esc(href)}">'
                             f"{_esc(item.title)}</a>"
                         )
                     session_lis.append(
@@ -93,7 +93,7 @@ def build_menubar_html(*, active_course: str | None = None, active_file: str | N
                         href = _file_href(course_id, section_name, "", item)
                         file_active = " is-active" if item.relative == active_file else ""
                         file_lis.append(
-                            f'<a class="file-link{file_active}" href="{_esc(href)}" target="_parent">'
+                            f'<a class="file-link{file_active}" href="{_esc(href)}">'
                             f"{_esc(item.title)}</a>"
                         )
                     section_items.append(
@@ -196,6 +196,24 @@ def build_menubar_html(*, active_course: str | None = None, active_file: str | N
   // Keep panels open while moving into nested flyouts on desktop.
   nav.querySelectorAll(".section-panel, .menu-node > .panel-inner").forEach((panel) => {{
     panel.addEventListener("mouseenter", clearCloseTimer);
+  }});
+
+  // Always navigate the top app window. Relative "?..." hrefs break inside
+  // Streamlit component iframes and are unreliable on Streamlit Cloud.
+  nav.querySelectorAll("a.file-link").forEach((a) => {{
+    a.addEventListener("click", (e) => {{
+      e.preventDefault();
+      e.stopPropagation();
+      const href = a.getAttribute("href") || "";
+      const qs = href.replace(/^\?/, "");
+      const win = window.top || window;
+      try {{
+        const base = win.location;
+        win.location.assign(base.pathname + (qs ? "?" + qs : "") + base.hash);
+      }} catch (err) {{
+        window.location.assign(href.startsWith("?") ? href : "?" + qs);
+      }}
+    }});
   }});
 
   finePointer.addEventListener("change", () => {{
@@ -421,25 +439,16 @@ MENUBAR_CSS = """
 
 
 def render_menubar(*, active_course: str | None = None, active_file: str | None = None) -> None:
-    """Render the menubar in a component iframe so hover/tap JS can run."""
-    import streamlit.components.v1 as components
+    """Render the menubar in the main document so file links update query params."""
+    import streamlit as st
 
     body = build_menubar_html(active_course=active_course, active_file=active_file)
-    # Tall enough for desktop flyouts; phone accordion grows inside the frame.
-    components.html(
-        f"""<!DOCTYPE html>
-<html><head><meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-{MENUBAR_CSS}
-<style>
-  html, body {{ margin: 0; background: transparent; }}
-  .su-menubar {{ margin-bottom: 0; }}
-</style>
-</head><body>
+    # Not iframed: relative ?course=&file= links work on Streamlit Cloud / phone.
+    st.html(
+        f"""{MENUBAR_CSS}
 {body}
-</body></html>""",
-        height=320,
-        scrolling=True,
+""",
+        unsafe_allow_javascript=True,
     )
 
 
