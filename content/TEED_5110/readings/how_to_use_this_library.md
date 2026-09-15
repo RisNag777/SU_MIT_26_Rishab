@@ -25,7 +25,7 @@ content/
     ...
 ```
 
-Pick a class in the sidebar, then Syllabus / Readings / Notes / Assignments.
+Pick a class in the top menu, then Syllabus / Readings / Notes / Assignments.
 
 ## Adding content
 
@@ -37,7 +37,3 @@ Drop files into the matching folder:
 - `content/TEED_5110/assignments/` - prompts and handouts
 
 Refresh the app and the new file appears under that class.
-
-## Listening
-
-Use the **Listen** controls: Play / Pause, -15s / +15s, Speed (0.75x-2x), Stop.

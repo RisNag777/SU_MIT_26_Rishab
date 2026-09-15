@@ -1,6 +1,6 @@
 # SU MIT 26 — Class Library
 
-Local Streamlit app for class **syllabus**, **readings**, **notes**, and **assignments**, organized by course, with browser text-to-speech (play/pause, ±15s, speed).
+Local Streamlit app for class **syllabus**, **readings**, **notes**, and **assignments**, organized by course.
 
 ## Setup
 
@@ -51,25 +51,14 @@ Under each course:
 | `notes/` | Your notes (`.md`, `.txt`) |
 | `assignments/` | Prompts and handouts |
 
-In the sidebar: pick **Class** → **Section** → **Open** a file.
-
-## Listen controls
-
-On any item, the **Listen** bar uses your browser’s speech engine:
-
-- Play / Pause
-- −15s / +15s (jumps by a few sentences)
-- Speed 0.75×–2×
-- Stop (reset to the start)
-
-Chrome and Edge work best. On iPhone Safari, tap **Play** once to start audio.
+Use the top menu: **Class** → **Section** → class session → file.
 
 ## Project layout
 
 ```
 app.py                 # Streamlit entry
-lib/content.py         # Scan courses + load Markdown / PDF text
-lib/tts_player.py      # Embedded Web Speech player
+lib/content.py         # Scan courses + load Markdown / files
+lib/menubar.py         # Nested course navigation
 content/<class>/...    # Your library files by class
 .streamlit/config.toml # Theme + bind address
 ```

@@ -8,8 +8,8 @@
 1. Open this repository on your laptop.
 2. Install dependencies and start the Streamlit app.
 3. Add one short reading under `content/TEED_5110/readings/` (or another TEED course folder).
-4. Open it in the app and listen with the TTS controls.
+4. Open it in the app from the course menu.
 
 ## Deliverable
 
-Confirm you can browse and listen on both laptop and phone (same Wi-Fi).
+Confirm you can browse content on both laptop and phone (same Wi-Fi).
