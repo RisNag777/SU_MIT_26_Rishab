@@ -1,4 +1,4 @@
-"""SU MIT 26 — Class readings, notes, and assignments with TTS."""
+"""SU MIT 26 — Class readings, notes, and assignments."""
 
 from __future__ import annotations
 
@@ -14,11 +14,8 @@ from lib.content import (
     list_courses,
     load_markdown,
     load_text,
-    speakable_text,
 )
 from lib.menubar import MENUBAR_CSS, render_menubar, resolve_item_from_params
-from lib.pdf_tts_viewer import render_pdf_tts_viewer
-from lib.tts_player import render_tts_player
 
 st.set_page_config(
     page_title="SU MIT 26",
@@ -98,10 +95,8 @@ def render_item(item: ContentItem) -> None:
         unsafe_allow_html=True,
     )
 
-    speech = speakable_text(item)
     if item.kind == "pdf":
-        # Always use the PDF viewer (page images for scans / PDF.js for text PDFs).
-        render_pdf_tts_viewer(item.path, speech)
+        _pdf_iframe(item.path)
         st.download_button(
             "Download PDF",
             data=item.path.read_bytes(),
@@ -110,10 +105,8 @@ def render_item(item: ContentItem) -> None:
         )
         return
 
-    if speech.strip():
-        render_tts_player(speech)
-    elif item.kind == "document":
-        st.info("Word `.doc` files can be downloaded below. Convert to PDF or Markdown for Listen.")
+    if item.kind == "document":
+        st.info("Word `.doc` / `.docx` files can be downloaded below.")
 
     st.divider()
 

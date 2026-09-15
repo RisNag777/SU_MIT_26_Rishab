@@ -5,8 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from pypdf import PdfReader
-
 CONTENT_ROOT = Path(__file__).resolve().parent.parent / "content"
 
 CATEGORIES = {
@@ -223,57 +221,3 @@ def load_markdown(path: Path) -> str:
 
 def load_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
-
-
-def extract_pdf_text(path: Path, *, allow_ocr: bool = False) -> str:
-    """Extract PDF text. By default uses native text + OCR cache only (no live OCR)."""
-    from lib.pdf_ocr import native_pdf_text, read_ocr_cache
-
-    cached = read_ocr_cache(path)
-    if cached:
-        return cached
-
-    native = native_pdf_text(path)
-    if allow_ocr:
-        from lib.pdf_ocr import ensure_pdf_text
-
-        text, _source = ensure_pdf_text(path)
-        return text
-    return native
-
-
-def speakable_text(item: ContentItem) -> str:
-    if item.kind == "markdown":
-        raw = load_markdown(item.path)
-        return _markdown_to_speech(raw)
-    if item.kind == "pdf":
-        return extract_pdf_text(item.path)
-    if item.kind == "document":
-        return ""
-    return load_text(item.path)
-
-
-def _markdown_to_speech(md: str) -> str:
-    lines: list[str] = []
-    in_code = False
-    for line in md.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("```"):
-            in_code = not in_code
-            continue
-        if in_code:
-            lines.append(stripped)
-            continue
-        if stripped.startswith("#"):
-            stripped = stripped.lstrip("#").strip()
-        stripped = stripped.replace("**", "").replace("__", "").replace("*", "").replace("_", "")
-        while "](" in stripped and "[" in stripped:
-            start = stripped.find("[")
-            mid = stripped.find("](", start)
-            end = stripped.find(")", mid)
-            if start < 0 or mid < 0 or end < 0:
-                break
-            label = stripped[start + 1 : mid]
-            stripped = stripped[:start] + label + stripped[end + 1 :]
-        lines.append(stripped)
-    return "\n".join(lines).strip()

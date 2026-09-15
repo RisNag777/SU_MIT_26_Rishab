@@ -6,16 +6,13 @@ from .content import (
     course_subtitle,
     ensure_course_folders,
     ensure_registered_courses,
-    extract_pdf_text,
     list_courses,
     list_items,
     list_sessions,
     load_markdown,
     load_text,
     session_label,
-    speakable_text,
 )
-from .tts_player import render_tts_player
 
 __all__ = [
     "CATEGORIES",
@@ -25,13 +22,10 @@ __all__ = [
     "course_subtitle",
     "ensure_course_folders",
     "ensure_registered_courses",
-    "extract_pdf_text",
     "list_courses",
     "list_items",
     "list_sessions",
     "load_markdown",
     "load_text",
     "session_label",
-    "speakable_text",
-    "render_tts_player",
 ]
